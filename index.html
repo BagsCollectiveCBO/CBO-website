@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Connect - Building Stronger Communities Together</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 1s ease;
+        }
+        
+        .member-card {
+            transition: all 0.3s ease;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            padding-bottom: 30px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 20px;
+            width: 2px;
+            height: calc(100% - 20px);
+            background: #e5e7eb;
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 hero-gradient rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold gradient-text">Community Connect</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="nav-link active text-gray-700 hover:text-purple-600" data-page="home">Home</a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-purple-600" data-page="about">About</a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-purple-600" data-page="gallery">Gallery</a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-purple-600" data-page="members">Members</a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-purple-600" data-page="dashboard">Dashboard</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                    <button id="logoutBtn" class="hidden bg-red-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-600 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="home" class="page active">
+        <!-- Hero Section -->
+        <section class="hero-gradient text-white py-20">
+            <div class="container mx-auto px-6">
+                <div class="max-w-3xl">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6">Building Stronger Communities Together</h1>
+                    <p class="text-xl mb-8 opacity-90">Join our mission to create positive change through collaboration, education, and community service. Together, we can make a difference.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition" onclick="showPage('about')">
+                            Learn More
+                        </button>
+                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition" onclick="showPage('gallery')">
+                            View Projects
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold gradient-text mb-2">500+</div>
+                        <div class="text-gray-600">Active Members</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold gradient-text mb-2">50+</div>
+                        <div class="text-gray-600">Projects Completed</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold gradient-text mb-2">1000+</div>
+                        <div class="text-gray-600">Lives Impacted</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold gradient-text mb-2">5</div>
+                        <div class="text-gray-600">Years of Service</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-12 gradient-text">What We Do</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-xl card-hover">
+                        <div class="feature-icon mb-4">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Community Service</h3>
+                        <p class="text-gray-600">Organizing volunteer events and service projects that make a real difference in our neighborhoods.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl card-hover">
+                        <div class="feature-icon mb-4">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Education Programs</h3>
+                        <p class="text-gray-600">Providing workshops, tutoring, and educational resources to empower individuals of all ages.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl card-hover">
+                        <div class="feature-icon mb-4">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Support & Outreach</h3>
+                        <p class="text-gray-600">Connecting people with resources and support systems to improve quality of life.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-16 hero-gradient text-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-6">Ready to Make a Difference?</h2>
+                <p class="text-xl mb-8 opacity-90">Join our community today and be part of something amazing.</p>
+                <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition" onclick="openLoginModal()">
+                    Get Started
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- About Page -->
+    <div id="about" class="page">
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h1 class="text-5xl font-bold text-center mb-12 gradient-text">About Us</h1>
+                
+                <!-- Mission Section -->
+                <div class="max-w-4xl mx-auto mb-16">
+                    <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-xl">
+                        <h2 class="text-3xl font-bold mb-4 gradient-text">Our Mission</h2>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Community Connect is dedicated to fostering stronger, more connected neighborhoods through collaborative action, education, and support. We believe that when people come together with a shared purpose, extraordinary things happen. Our mission is to empower individuals, strengthen communities, and create lasting positive change.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Values Section -->
+                <div class="mb-16">
+                    <h2 class="text-3xl font-bold text-center mb-12 gradient-text">Our Core Values</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                            <div class="feature-icon mx-auto mb-4">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Collaboration</h3>
+                            <p class="text-gray-600">Working together to achieve common goals</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                            <div class="feature-icon mx-auto mb-4">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Innovation</h3>
+                            <p class="text-gray-600">Finding creative solutions to community challenges</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                            <div class="feature-icon mx-auto mb-4">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Inclusivity</h3>
+                            <p class="text-gray-600">Welcoming and embracing diversity</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg card-hover text-center">
+                            <div class="feature-icon mx-auto mb-4">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Impact</h3>
+                            <p class="text-gray-600">Measuring and maximizing our positive influence</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Section -->
+                <div class="max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-bold text-center mb-12 gradient-text">Our Journey</h2>
+                    <div class="timeline-item">
+                        <h3 class="text-xl font-bold mb-2">2019 - The Beginning</h3>
+                        <p class="text-gray-600">Founded by a group of passionate community members with a vision for positive change.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3 class="text-xl font-bold mb-2">2020 - Growth</h3>
+                        <p class="text-gray-600">Expanded our programs and reached over 200 active members despite challenges.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3 class="text-xl font-bold mb-2">2021 - Impact</h3>
+                        <p class="text-gray-600">Completed 20+ community projects and launched our education initiative.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3 class="text-xl font-bold mb-2">2022 - Recognition</h3>
+                        <p class="text-gray-600">Received community excellence award and expanded to three new neighborhoods.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3 class="text-xl font-bold mb-2">2023 - Today</h3>
+                        <p class="text-gray-600">Continuing to grow and make a difference with over 500 active members.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Gallery Page -->
+    <div id="gallery" class="page">
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h1 class="text-5xl font-bold text-center mb-8 gradient-text">Project Gallery</h1>
+                <p class="text-center text-gray-600 mb-12 text-lg">Explore our completed and ongoing community projects</p>
+                
+                <!-- Filter Buttons -->
+                <div class="flex justify-center gap-4 mb-12 flex-wrap">
+                    <button class="filter-btn active bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold" data-filter="all">All Projects</button>
+                    <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-300" data-filter="completed">Completed</button>
+                    <button class="filter-btn bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-300" data-filter="in-progress">In Progress</button>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="galleryGrid">
+                    <!-- Gallery items will be dynamically inserted -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Members Page -->
+    <div id="members" class="page">
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <div id="membersLoginPrompt" class="text-center py-20">
+                    <div class="max-w-md mx-auto">
+                        <div class="feature-icon mx-auto mb-6" style="width: 80px; height: 80px; font-size: 32px;">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-4 gradient-text">Members Only</h2>
+                        <p class="text-gray-600 mb-8">Please login to access the members directory and exclusive content.</p>
+                        <button class="btn-primary text-white px-8 py-3 rounded-lg font-semibold" onclick="openLoginModal()">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login to Continue
+                        </button>
+                    </div>
+                </div>
+
+                <div id="membersContent" class="hidden">
+                    <h1 class="text-5xl font-bold text-center mb-8 gradient-text">Our Members</h1>
+                    <p class="text-center text-gray-600 mb-12 text-lg">Meet the amazing people who make our community strong</p>
+                    
+                    <!-- Search Bar -->
+                    <div class="max-w-md mx-auto mb-12">
+                        <div class="relative">
+                            <input type="text" id="memberSearch" placeholder="Search members..." class="w-full px-6 py-3 pr-12 rounded-lg border-2 border-gray-200 focus:border-purple-500 focus:outline-none">
+                            <i class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Members Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="membersGrid">
+                        <!-- Members will be dynamically inserted -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard" class="page">
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div id="dashboardLoginPrompt" class="text-center py-20">
+                    <div class="max-w-md mx-auto">
+                        <div class="feature-icon mx-auto mb-6" style="width: 80px; height: 80px; font-size: 32px;">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-4 gradient-text">Dashboard Access Required</h2>
+                        <p class="text-gray-600 mb-8">Please login to view your dashboard and community statistics.</p>
+                        <button class="btn-primary text-white px-8 py-3 rounded-lg font-semibold" onclick="openLoginModal()">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login to Continue
+                        </button>
+                    </div>
+                </div>
+
+                <div id="dashboardContent" class="hidden">
+                    <h1 class="text-5xl font-bold mb-8 gradient-text">Dashboard</h1>
+                    
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between mb-4">
+                                <i class="fas fa-users text-3xl opacity-80"></i>
+                                <span class="text-3xl font-bold">523</span>
+                            </div>
+                            <div class="text-lg opacity-90">Total Members</div>
+                            <div class="text-sm opacity-75 mt-2">+12% from last month</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <div class="flex items-center justify-between mb-4">
+                                <i class="fas fa-project-diagram text-3xl opacity-80"></i>
+                                <span class="text-3xl font-bold">47</span>
+                            </div>
+                            <div class="text-lg opacity-90">Active Projects</div>
+                            <div class="text-sm opacity-75 mt-2">8 completed this month</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <div class="flex items-center justify-between mb-4">
+                                <i class="fas fa-calendar-check text-3xl opacity-80"></i>
+                                <span class="text-3xl font-bold">156</span>
+                            </div>
+                            <div class="text-lg opacity-90">Events This Year</div>
+                            <div class="text-sm opacity-75 mt-2">23 upcoming events</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                            <div class="flex items-center justify-between mb-4">
+                                <i class="fas fa-clock text-3xl opacity-80"></i>
+                                <span class="text-3xl font-bold">2,847</span>
+                            </div>
+                            <div class="text-lg opacity-90">Volunteer Hours</div>
+                            <div class="text-sm opacity-75 mt-2">This quarter</div>
+                        </div>
+                    </div>
+
+                    <!-- Charts and Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                        <!-- Recent Activity -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-2xl font-bold mb-6 gradient-text">Recent Activity</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                                    <div class="feature-icon" style="width: 40px; height: 40px; font-size: 16px;">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold">Park Cleanup Completed</div>
+                                        <div class="text-sm text-gray-600">2 hours ago • 25 volunteers participated</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                                    <div class="feature-icon" style="width: 40px; height: 40px; font-size: 16px;">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold">New Member Joined</div>
+                                        <div class="text-sm text-gray-600">5 hours ago • Sarah Johnson</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                                    <div class="feature-icon" style="width: 40px; height: 40px; font-size: 16px;">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold">Upcoming Event</div>
+                                        <div class="text-sm text-gray-600">Tomorrow • Community Garden Workshop</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Project Progress -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h3 class="text-2xl font-bold mb-6 gradient-text">Project Progress</h3>
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="font-semibold">Community Garden</span>
+                                        <span class="text-purple-600 font-bold">85%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="font-semibold">Youth Mentorship</span>
+                                        <span class="text-purple-600 font-bold">62%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 62%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="font-semibold">Food Drive Initiative</span>
+                                        <span class="text-purple-600 font-bold">94%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 94%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="font-semibold">Senior Support Program</span>
+                                        <span class="text-purple-600 font-bold">45%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-2xl font-bold mb-6 gradient-text">Upcoming Events</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="border-2 border-purple-200 rounded-lg p-6 card-hover">
+                                <div class="text-purple-600 font-bold mb-2">
+                                    <i class="fas fa-calendar mr-2"></i>Oct 15, 2026
+                                </div>
+                                <h4 class="text-xl font-bold mb-2">Community Garden Workshop</h4>
+                                <p class="text-gray-600 mb-4">Learn sustainable gardening practices and help plant our fall crops.</p>
+                                <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm">Register</button>
+                            </div>
+                            <div class="border-2 border-purple-200 rounded-lg p-6 card-hover">
+                                <div class="text-purple-600 font-bold mb-2">
+                                    <i class="fas fa-calendar mr-2"></i>Oct 22, 2026
+                                </div>
+                                <h4 class="text-xl font-bold mb-2">Youth Mentorship Kickoff</h4>
+                                <p class="text-gray-600 mb-4">Orientation session for new mentors and mentees in our program.</p>
+                                <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm">Register</button>
+                            </div>
+                            <div class="border-2 border-purple-200 rounded-lg p-6 card-hover">
+                                <div class="text-purple-600 font-bold mb-2">
+                                    <i class="fas fa-calendar mr-2"></i>Nov 5, 2026
+                                </div>
+                                <h4 class="text-xl font-bold mb-2">Annual Fundraising Gala</h4>
+                                <p class="text-gray-600 mb-4">Join us for an evening of celebration and support for our mission.</p>
+                                <button class="btn-primary text-white px-4 py-2 rounded-lg text-sm">Register</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold gradient-text">Welcome Back</h2>
+                <button onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                    <input type="email" id="loginEmail" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="your@email.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none" placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-primary text-white w-full py-3 rounded-lg font-semibold">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+                <div class="text-center mt-4">
+                    <p class="text-gray-600">Demo credentials: demo@community.org / demo123</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 hero-gradient rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-white text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold">Community Connect</span>
+                    </div>
+                    <p class="text-gray-400">Building stronger communities through collaboration and service.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" onclick="showPage('home')">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" onclick="showPage('about')">About</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" onclick="showPage('gallery')">Gallery</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" onclick="showPage('members')">Members</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-envelope mr-2"></i>info@communityconnect.org</li>
+                        <li><i class="fas fa-phone mr-2"></i>(555) 123-4567</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>123 Community St</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-purple-600 transition">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+                <p>&copy; 2026 Community Connect. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data
+        const galleryProjects = [
+            {
+                title: "Community Garden Project",
+                description: "Transforming vacant lots into beautiful community gardens",
+                status: "completed",
+                color: "from-green-400 to-blue-500",
+                icon: "fa-seedling"
+            },
+            {
+                title: "Youth Mentorship Program",
+                description: "Pairing experienced mentors with young community members",
+                status: "in-progress",
+                color: "from-purple-400 to-pink-500",
+                icon: "fa-graduation-cap"
+            },
+            {
+                title: "Senior Support Initiative",
+                description: "Providing assistance and companionship to elderly residents",
+                status: "completed",
+                color: "from-orange-400 to-red-500",
+                icon: "fa-heart"
+            },
+            {
+                title: "Neighborhood Cleanup",
+                description: "Monthly cleanup events to keep our streets beautiful",
+                status: "completed",
+                color: "from-blue-400 to-cyan-500",
+                icon: "fa-broom"
+            },
+            {
+                title: "Food Drive Campaign",
+                description: "Collecting and distributing food to families in need",
+                status: "in-progress",
+                color: "from-yellow-400 to-orange-500",
+                icon: "fa-utensils"
+            },
+            {
+                title: "Digital Literacy Workshop",
+                description: "Teaching essential computer skills to community members",
+                status: "in-progress",
+                color: "from-indigo-400 to-purple-500",
+                icon: "fa-laptop"
+            },
+            {
+                title: "Park Renovation",
+                description: "Upgrading local parks with new equipment and landscaping",
+                status: "completed",
+                color: "from-green-400 to-teal-500",
+                icon: "fa-tree"
+            },
+            {
+                title: "Health Fair Organization",
+                description: "Free health screenings and wellness education events",
+                status: "completed",
+                color: "from-pink-400 to-rose-500",
+                icon: "fa-stethoscope"
+            },
+            {
+                title: "Arts & Culture Festival",
+                description: "Celebrating local artists and cultural diversity",
+                status: "in-progress",
+                color: "from-violet-400 to-fuchsia-500",
+                icon: "fa-palette"
+            }
+        ];
+
+        const members = [
+            { name: "Sarah Johnson", role: "Community Leader", email: "sarah.j@community.org", avatar: "SJ" },
+            { name: "Michael Chen", role: "Project Coordinator", email: "michael.c@community.org", avatar: "MC" },
+            { name: "Emily Rodriguez", role: "Volunteer Manager", email: "emily.r@community.org", avatar: "ER" },
+            { name: "David Kim", role: "Education Director", email: "david.k@community.org", avatar: "DK" },
+            { name: "Lisa Thompson", role: "Event Planner", email: "lisa.t@community.org", avatar: "LT" },
+            { name: "James Wilson", role: "Outreach Coordinator", email: "james.w@community.org", avatar: "JW" },
+            { name: "Maria Garcia", role: "Fundraising Lead", email: "maria.g@community.org", avatar: "MG" },
+            { name: "Robert Brown", role: "Technology Support", email: "robert.b@community.org", avatar: "RB" },
+            { name: "Jennifer Lee", role: "Communications", email: "jennifer.l@community.org", avatar: "JL" }
+        ];
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) {
+                    link.classList.add('active');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Navigation click handlers
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = link.dataset.page;
+                
+                if ((pageId === 'members' || pageId === 'dashboard') && !isLoggedIn()) {
+                    openLoginModal();
+                    return;
+                }
+                
+                showPage(pageId);
+            });
+        });
+
+        // Login functionality
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Demo credentials
+            if (email === 'demo@community.org' && password === 'demo123') {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                closeLoginModal();
+                updateUI();
+                alert('Login successful! Welcome back.');
+            } else {
+                alert('Invalid credentials. Please use demo@community.org / demo123');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            updateUI();
+            showPage('home');
+            alert('You have been logged out.');
+        }
+
+        function isLoggedIn() {
+            return localStorage.getItem('isLoggedIn') === 'true';
+        }
+
+        function updateUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const membersLoginPrompt = document.getElementById('membersLoginPrompt');
+            const membersContent = document.getElementById('membersContent');
+            const dashboardLoginPrompt = document.getElementById('dashboardLoginPrompt');
+            const dashboardContent = document.getElementById('dashboardContent');
+
+            if (isLoggedIn()) {
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                membersLoginPrompt.classList.add('hidden');
+                membersContent.classList.remove('hidden');
+                dashboardLoginPrompt.classList.add('hidden');
+                dashboardContent.classList.remove('hidden');
+            } else {
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                membersLoginPrompt.classList.remove('hidden');
+                membersContent.classList.add('hidden');
+                dashboardLoginPrompt.classList.remove('hidden');
+                dashboardContent.classList.add('hidden');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('loginBtn').addEventListener('click', openLoginModal);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+
+        // Gallery functionality
+        function renderGallery(filter = 'all') {
+            const galleryGrid = document.getElementById('galleryGrid');
+            const filteredProjects = filter === 'all' 
+                ? galleryProjects 
+                : galleryProjects.filter(p => p.status === filter);
+
+            galleryGrid.innerHTML = filteredProjects.map(project => `
+                <div class="gallery-item card-hover" data-status="${project.status}">
+                    <div class="h-64 bg-gradient-to-br ${project.color} flex items-center justify-center">
+                        <i class="fas ${project.icon} text-white text-6xl opacity-80"></i>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="text-white">
+                            <h3 class="text-xl font-bold mb-2">${project.title}</h3>
+                            <p class="text-sm mb-2">${project.description}</p>
+                            <span class="inline-block px-3 py-1 bg-white text-gray-800 rounded-full text-xs font-semibold">
+                                ${project.status === 'completed' ? '✓ Completed' : '⏳ In Progress'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Gallery filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-purple-600', 'text-white');
+                    b.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                btn.classList.add('active', 'bg-purple-600', 'text-white');
+                btn.classList.remove('bg-gray-200', 'text-gray-700');
+                renderGallery(btn.dataset.filter);
+            });
+        });
+
+        // Members functionality
+        function renderMembers(searchTerm = '') {
+            const membersGrid = document.getElementById('membersGrid');
+            const filteredMembers = searchTerm 
+                ? members.filter(m => 
+                    m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    m.role.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
+                : members;
+
+            membersGrid.innerHTML = filteredMembers.map(member => `
+                <div class="member-card bg-white rounded-xl shadow-lg p-6 text-center">
+                    <div class="w-20 h-20 hero-gradient rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl font-bold">${member.avatar}</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">${member.name}</h3>
+                    <p class="text-purple-600 font-semibold mb-3">${member.role}</p>
+                    <p class="text-gray-600 text-sm mb-4">${member.email}</p>
+                    <div class="flex justify-center space-x-3">
+                        <button class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-purple-100 transition">
+                            <i class="fas fa-envelope text-purple-600"></i>
+                        </button>
+                        <button class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-purple-100 transition">
+                            <i class="fas fa-phone text-purple-600"></i>
+                        </button>
+                        <button class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-purple-100 transition">
+                            <i class="fab fa-linkedin text-purple-600"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Member search
+        document.getElementById('memberSearch').addEventListener('input', (e) => {
+            renderMembers(e.target.value);
+        });
+
+        // Initialize
+        renderGallery();
+        renderMembers();
+        updateUI();
+
+        // Close modal on outside click
+        document.getElementById('loginModal').addEventListener('click', (e) => {
+            if (e.target.id === 'loginModal') {
+                closeLoginModal();
+            }
+        });
+    </script>
+</body>
+</html>
