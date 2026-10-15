@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Redirecting...</title>
+    <meta http-equiv="refresh" content="0; url=/CBO-website/" />
+    <script>
+      (() => {
+        const repoBase = '/CBO-website';
+        const path = window.location.pathname || '/';
+        const search = window.location.search || '';
+        const hash = window.location.hash || '';
+
+        const target = path.startsWith(repoBase)
+          ? repoBase + (path === repoBase ? '/' : path.slice(repoBase.length)) + search + hash
+          : repoBase + '/' + search + hash;
+
+        window.location.replace(target);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to the site...</p>
+  </body>
+</html>
